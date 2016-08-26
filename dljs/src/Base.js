@@ -1,8 +1,11 @@
+const Plugin = require('./Plugin');
+
 /*
-  NeuralNetwork
+  Base
+  event system, storage and plug method
 */
 
-class NeuralNetwork {
+class Base {
   constructor() {
     // Storage is a flat Map-like object, plugins should namespace their keys
     this.storage = new Map();
@@ -41,6 +44,20 @@ class NeuralNetwork {
     // We return the unsubscribe function
     return () => this.events[listenersKey][index] = null;
   }
+
+  plug(instance, overrideKey) {
+    if (!(instance instanceof Plugin)) throw new Error('Invalid plugin');
+
+    instance.plug(this); // TODO: remane this
+
+    const instanceKey = overrideKey || instance.name;
+
+    console.log('instanceKey:', instanceKey);
+
+    this[instanceKey] = instance;
+
+    console.log(`Plugged "${instance.name}" under "${instanceKey}" key`);
+  }
 }
 
-module.exports = NeuralNetwork;
+module.exports = Base;

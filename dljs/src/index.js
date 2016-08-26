@@ -1,8 +1,8 @@
 // const _ = process.env.NODE_ENV !== 'production';
 const Matrix = require('./Matrix');
-const NeuralNetwork = require('./NeuralNetwork');
-const Perceptron = require('./Perceptron');
+const Plugin = require('./Plugin');
 const LabeledDataset = require('./LabeledDataset');
+const FeedforwardNetwork = require('./FeedforwardNetwork');
 
 // Training a neural network:
 // - Randomly initialize weights
@@ -12,4 +12,4 @@ const LabeledDataset = require('./LabeledDataset');
 // - Use gradient checking to compare J gradient and Delta (disable gradient checking on production)
 // - Use gradient descent (or watever) to try to minimize J, and get new thetas
 
-module.exports = { Matrix, NeuralNetwork, Perceptron, LabeledDataset };
+module.exports = { Matrix, FeedforwardNetwork, LabeledDataset, Plugin };

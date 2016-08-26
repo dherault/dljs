@@ -1,17 +1,21 @@
 {
-  "name": "dljs-monorepo",
+  "name": "dljs",
   "version": "0.0.0",
-  "description": "Monorepository for dljs",
-  "main": "index.js",
+  "description": "Deep Learning in JavaScript",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --no-timeouts",
+    "coverage": "istanbul cover _mocha -- --no-timeouts",
+    "coverage:all": "npm run coverage && npm run coverage:serve",
+    "coverage:serve": "cd coverage/lcov-report && python -m SimpleHTTPServer"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dherault/dljs.git"
   },
   "keywords": [
-    "dljs"
+    "deep learning",
+    "machine learning"
   ],
   "author": "David Hérault <dherault@gmail.com> (https://github.com/dherault)",
   "license": "MIT",
@@ -20,10 +24,6 @@
   },
   "homepage": "https://github.com/dherault/dljs#readme",
   "devDependencies": {
-    "eslint": "^3.3.1",
-    "eslint-config-airbnb": "^10.0.1",
-    "eslint-plugin-import": "^1.14.0",
-    "eslint-plugin-jsx-a11y": "^2.1.0",
-    "eslint-plugin-react": "^6.1.2"
+    "chai": "^3.5.0"
   }
 }

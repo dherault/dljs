@@ -1,3 +1,4 @@
+// Don't run validations on prod
 const _ = process.env.NODE_ENV !== 'production';
 
 class DimensionError extends Error {
@@ -35,19 +36,19 @@ class Matrix {
   }
 
   getRow(i) {
-    // Use slice
     const { R, C, data } = this;
 
     if (_ && i < 0 || i >= R || Math.floor(i) !== i) throw new Error(`Matrix.getRow: arg must be an integer between 0 and ${R - 1}`);
 
-    const iC = i * C;
-    const newData = new Float32Array(C);
-
-    for (let j = 0; j < C; j++) {
-      newData[j] = data[iC + j];
-    }
-
-    return new Matrix(1, C, newData, true);
+    // const iC = i * C;
+    // const newData = new Float32Array(C);
+    //
+    // for (let j = 0; j < C; j++) {
+    //   newData[j] = data[iC + j];
+    // }
+    //
+    // return new Matrix(1, C, newData, true);
+    return new Matrix(1, C, data.slice(i * C, (i + 1) * C), true);
   }
 
   getColumn(j) {
@@ -67,6 +68,7 @@ class Matrix {
   transpose() {
     const { R, C } = this;
 
+    // Vector shortcut
     if (this.isVector) return new Matrix(C, R, this.data);
 
     const k = R * C - 1;
@@ -214,35 +216,36 @@ class Matrix {
     let conditionFn;
 
     switch (direction) {
-      case 'top':
-        newR = R + 1;
-        conditionFn = (k, R, C) => k < C;
-        break;
-
-      case 'bottom':
-        newR = R + 1;
-        conditionFn = (k, R, C) => k >= C * (R - 1);
-        break;
-
       case 'left':
         newC = C + 1;
-        conditionFn = (k, R, C) => !(k % C);
+        conditionFn = (k, R, C) => k % C;
         break;
 
       case 'right':
         newC = C + 1;
-        conditionFn = (k, R, C) => !((k + 1) % C);
+        conditionFn = (k, R, C) => (k + 1) % C;
+        break;
+
+      case 'top':
+        newR = R + 1;
+        conditionFn = (k, R, C) => k >= C;
+        break;
+
+      case 'bottom':
+        newR = R + 1;
+        conditionFn = (k, R, C) => k < C * (R - 1);
         break;
 
       default:
-        throw new Error(`Matrix.augment: Expected first arg to be one of ['top', 'bottom', 'left', 'right'], got ${direction} instead`);
+        throw new Error(`Matrix.augment: Expected first arg to be one of ['left', 'right', 'top', 'bottom'], got ${direction} instead`);
     }
 
     const newDim = newC * newR;
     const newData = new Float32Array(newDim);
 
     let c = 0;
-    for (let k = 0; k < newDim; k++) newData[k] = conditionFn(k, newR, newC) ? scalar : data[c++];
+
+    for (let k = 0; k < newDim; k++) newData[k] = conditionFn(k, newR, newC) ? data[c++] : scalar;
 
     return new Matrix(newR, newC, newData, true);
   }
@@ -256,6 +259,23 @@ class Matrix {
     const mData = m.data;
 
     return this.data.map((x, i) => x * mData[i]).reduce((a, b) => a + b, 0);
+  }
+
+  hadamardProduct(m) {
+    const { R, C } = this;
+
+    if (_) {
+      if (!(m instanceof Matrix)) throw new Error(`Matrix.hadamardProduct: Expected arg to be a Matrix, got ${typeof v} instead`);
+      if (!(R === m.R && C === m.C)) throw new DimensionError('Matrix.hadamardProduct', this, m);
+    }
+
+    const mData = m.data;
+
+    return new Matrix(R, C, this.data.map((x, i) => x * mData[i]), true);
+  }
+
+  sum() {
+    return this.data.reduce((a, b) => a + b, 0);
   }
 
   printDim() {

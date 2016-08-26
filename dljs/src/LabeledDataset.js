@@ -38,14 +38,16 @@ function scaleData(dataset, options) {
 
 class LabeledDataset {
   constructor(data, labelKey, { scale, validation }) {
+    const K = []; // The categories
     const rawInputs = [];
-    const labels = [];
+    const labelsMatrixData = [];
     const keys = Object.keys(data[0]);
     const li = keys.indexOf(labelKey);
     const inputsKeys = keys.slice(0, li).concat(keys.slice(li + 1));
 
     this.keys = keys;
     this.originalData = data;
+    this.length = data.length;
 
     // Data validation
 
@@ -63,15 +65,22 @@ class LabeledDataset {
     data.forEach(example => {
       const e = Object.assign({}, example);
 
-      labels.push({ [labelKey]: e[labelKey] });
-
       delete e[labelKey];
 
       rawInputs.push(e);
+
+      if (!K.includes(example[labelKey])) K.push(example[labelKey]);
+    });
+
+    this.categories = K;
+
+    data.forEach(example => {
+      K.forEach(k => {
+        labelsMatrixData.push(k === example[labelKey] ? 1 : 0);
+      });
     });
 
     this.rawInputs = rawInputs;
-    this.labels = labels;
 
     // Scaling
 
@@ -81,16 +90,15 @@ class LabeledDataset {
 
     // Design matrix
 
-    function flattenInputs(inputs, keys) {
-      return inputs.map(example => {
-        const a = [];
-        keys.forEach(key => a.push(example[key]));
+    const designMatrixData = workingInputs.map(example => {
+      const a = [];
+      inputsKeys.forEach(key => a.push(example[key]));
 
-        return a;
-      }).reduce((a, b) => a.concat(b), []);
-    }
+      return a;
+    }).reduce((a, b) => a.concat(b), []);
 
-    this.designMatrix = new Matrix(workingInputs.length, inputsKeys.length, flattenInputs(workingInputs, inputsKeys));
+    this.labelsMatrix = new Matrix(data.length, K.length, labelsMatrixData);
+    this.designMatrix = new Matrix(workingInputs.length, inputsKeys.length, designMatrixData);
   }
 
   get(i) {

@@ -1,11 +1,12 @@
 const Matrix = require('./Matrix');
-const NeuralNetwork = require('./NeuralNetwork');
+const Base = require('./Base');
 
 /*
-  Perceptron
+  FeedforwardNetwork
 */
 
-class Perceptron extends NeuralNetwork {
+// Multilayer Logistic Neural Network
+class FeedforwardNetwork extends Base {
   constructor(inputDefinition, hiddenLayersDefinition, outputDefinition) {
     super();
 
@@ -34,7 +35,7 @@ class Perceptron extends NeuralNetwork {
       const fanIn = topology[i - 1] + 1; // Added intercept
 
       // TODO: frame the randomness with formulas for each activation fn
-      // http://www.jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf?hc_location=ufi
+      // http://www.jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf
       const r = Math.sqrt(6 / (fanIn + fanOut)); // For sigmoid
 
       this.weightsMatrices.push(Matrix.random(fanOut, fanIn, -r, r));
@@ -42,9 +43,10 @@ class Perceptron extends NeuralNetwork {
 
     this.hiddenLayers = hiddenLayersDefinition.slice();
 
+    this.regularizationCoef = 0.3;
+
     this.registerEvents();
 
-    this.plug = () => null;
     this.setHyperParametersStorage = () => null;
   }
 
@@ -109,6 +111,7 @@ class Perceptron extends NeuralNetwork {
 
     console.log('Inputs:', example.printDim());
     // const activationFn = x => Math.max(x, 0); // ReLU
+    // const activationFn = x => Math.log(Math.exp(x) + 1); // Softplus
     // const activationFn = x => x / ( 1 + Math.abs(x)); // Softsign
     const activationFn = x => 1 / (1 + Math.exp(-x)); // Sigmoid
 
@@ -140,6 +143,54 @@ class Perceptron extends NeuralNetwork {
     // ...
     this.events.onAfterTrain();
   }
+
+  costFunction(dataset) {
+    const { labelsMatrix, length: m } = dataset;
+    const { regularizationCoef, topology, weightsMatrices } = this;
+
+    const H = this.forward(dataset);
+
+    let h, y;
+    let J = 0;
+    let r = 0;
+
+    for (let i = 0; i < m; i++) {
+      h = H.getRow(i);
+      y = labelsMatrix.getRow(i);
+
+      // console.log('h', h);
+      // console.log('y', y);
+      // console.log('y .* h', y.hadamardProduct(h));
+
+      // const _y = y.map(x => 1 - x);
+      // const lh = h.map(Math.log);
+      // const l_h = h.map(x => Math.log(1 - x));
+
+      // console.log('_y', _y);
+      // console.log('lh', lh);
+      // console.log('l_h', l_h);
+
+      J += y.hadamardProduct(h.map(Math.log)).addMatrix(y.map(x => 1 - x).hadamardProduct(h.map(x => Math.log(1 - x)))).sum();
+
+      // console.log(J);
+      // break;
+    }
+
+    if (!regularizationCoef) return -J / m;
+
+    // console.log('regularization', regularizationCoef);
+
+    for (let l = 0, L = topology.length - 2; l < L; l++) {
+      weightsMatrices[l].forEachElement((x, i, j) => {
+        if (j) r += x * x;
+      });
+    }
+
+    // console.log('r', r);
+    // console.log('reg', r * regularizationCoef / (2 * m));
+
+    return (-J + r * regularizationCoef / 2) / m;
+  }
 }
 
-module.exports = Perceptron;
+module.exports = FeedforwardNetwork;
