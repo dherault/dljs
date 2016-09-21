@@ -52,8 +52,6 @@ class Base {
 
     const instanceKey = overrideKey || instance.name;
 
-    console.log('instanceKey:', instanceKey);
-
     this[instanceKey] = instance;
 
     console.log(`Plugged "${instance.name}" under "${instanceKey}" key`);

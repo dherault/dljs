@@ -1,0 +1,15 @@
+{
+  "name": "dljs-dashboard-basic-example",
+  "version": "0.0.0",
+  "description": "Basic example of dljs-dashboard",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "David Hérault <dherault@gmail.com> (https://github.com/dherault)",
+  "license": "MIT",
+  "dependencies": {
+    "dljs": "^0.0.0",
+    "dljs-dashboard": "^0.0.0"
+  }
+}

@@ -7,7 +7,8 @@
     "test": "mocha --no-timeouts",
     "coverage": "istanbul cover _mocha -- --no-timeouts",
     "coverage:all": "npm run coverage && npm run coverage:serve",
-    "coverage:serve": "cd coverage/lcov-report && python -m SimpleHTTPServer"
+    "coverage:serve": "cd coverage/lcov-report && python -m SimpleHTTPServer",
+    "start": "node examples/basic/index.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,9 @@
     "url": "https://github.com/dherault/dljs/issues"
   },
   "homepage": "https://github.com/dherault/dljs#readme",
+  "files": [
+    "src"
+  ],
   "devDependencies": {
     "chai": "^3.5.0"
   }

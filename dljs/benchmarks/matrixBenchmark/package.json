@@ -1,0 +1,16 @@
+{
+  "name": "dljs-matrix-benchmark",
+  "version": "0.0.0",
+  "description": "Benchmark multiple matrix lib",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dljs": "0.0.0",
+    "mathjs": "^3.4.1"
+  }
+}

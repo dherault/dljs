@@ -2,10 +2,8 @@
   "name": "dljs-dashboard",
   "version": "0.0.0",
   "description": "A web-based dashboard for dljs",
-  "main": "index.js",
+  "main": "src/server/DashboardPlugin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -16,13 +14,18 @@
   ],
   "author": "David Hérault <dherault@gmail.com> (https://github.com/dherault)",
   "license": "MIT",
+  "files": [
+    "src"
+  ],
   "dependencies": {
     "dljs": "^0.0.0",
     "normalize.css": "^4.2.0",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-hot-loader": "^3.0.0-beta.2",
+    "react-redux": "^4.4.5",
     "react-router": "^2.7.0",
+    "redux": "^3.5.2",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8"
   },

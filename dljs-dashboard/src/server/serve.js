@@ -6,14 +6,14 @@ const baseConfig = require('./webpack.config');
 
 const baseParams = {
   hot: true,
-  contentBase: path.join(__dirname, './app'),
+  contentBase: path.join(__dirname, '../client'),
   publicPath: baseConfig.output.publicPath,
   historyApiFallback: true,
-  stats: { colors: true },
+  quiet: true,
+  // stats: { colors: true },
 };
 
-module.exports = function serve({ host, port, socketPort }, cb) {
-  const callback = typeof cb === 'function' ? cb : (() => null);
+module.exports = function serve({ host, port, socketPort }) {
   const params = Object.assign({}, baseParams); // TODO: verbose and other options
   const config = Object.assign({}, baseConfig);
 
@@ -36,7 +36,5 @@ module.exports = function serve({ host, port, socketPort }, cb) {
     });
   });
 
-  Promise.all([compilerPromise, serverPromise])
-    .then(() => callback(null))
-    .catch(err => callback(err));
+  return Promise.all([compilerPromise, serverPromise]);
 };
